@@ -2,58 +2,47 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🕵️ Lien traqué — Lingotech</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Redirection — Lingotech</title>
+<script src="tracker.js"></script>
 <style>
+:root{--bg:#2C1B18;--card:#3E2723;--border:#5D4037;--gold:#D4AF37;--text:#FDFBF7;--muted:#A1887F}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#1a1410;color:#f7f1e6;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:24px}
-.container{max-width:480px}
-.spy-icon{font-size:4rem;margin-bottom:16px}
-h1{font-size:2rem;font-weight:800;background:linear-gradient(135deg,#caa15a,#f5d76e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px}
-p{color:#c9b9a3;font-size:1.05rem;line-height:1.6;margin-bottom:8px}
-.count{font-size:3rem;font-weight:800;background:linear-gradient(135deg,#caa15a,#f5d76e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:16px 0}
-.label{color:#c9b9a3;font-size:.85rem;margin-bottom:24px}
-.btn{display:inline-block;padding:14px 32px;border-radius:10px;background:linear-gradient(135deg,#caa15a,#f5d76e);color:#1a1410;font-size:1rem;font-weight:600;text-decoration:none;cursor:pointer;border:none;transition:all .3s}
-.btn:hover{transform:translateY(-2px)}
-.footer{position:fixed;bottom:16px;left:0;right:0;color:#c9b9a3;font-size:.8rem}
-.footer a{color:#e3b04b;text-decoration:none}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:40px;max-width:400px;width:100%}
+h1{color:var(--gold);font-size:1.5em;margin-bottom:10px}
+p{color:var(--muted);line-height:1.6;font-size:.95em;margin-bottom:20px}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:20px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.count{font-size:2.5em;font-weight:800;color:var(--gold)}
+.label{color:var(--muted);font-size:.85em}
+.btn{display:inline-block;background:var(--gold);color:var(--bg);padding:12px 24px;border-radius:50px;font-weight:700;text-decoration:none;font-size:.9em;transition:.2s}
+.btn:hover{box-shadow:0 4px 20px rgba(212,175,55,.3)}
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="spy-icon">🕵️</div>
-  <h1>Lien traqué</h1>
-  <p>Vous allez être redirigé vers Lingotech dans quelques instants.</p>
-  <p>Votre visite a été enregistrée.</p>
-  <div class="count" id="visitCount">0</div>
+
+<div class="card">
+  <div class="count" id="hitCount">-</div>
   <div class="label">visites enregistrées</div>
-  <a href="/" class="btn" id="goBtn">Aller directement</a>
+  <div class="spinner"></div>
+  <h1>🕵️ Lien traqué</h1>
+  <p>Vous allez être redirigé vers Lingotech dans quelques instants.<br>Votre visite a été enregistrée.</p>
+  <a href="#" class="btn" id="goBtn" data-track="spy:clic_manuel">Aller directement</a>
 </div>
-<div class="footer"><a href="https://lingotech-six.vercel.app">Lingotech</a> • Données stockées localement 🕵️</div>
 
-<script src="tracker.js"></script>
 <script>
-(function(){
-  const count = document.getElementById('visitCount');
-  function updateCount(){
-    if(window.__tracker){
-      const s = window.__tracker.stats();
-      count.textContent = s.totalVisits;
-    }
+var base = window.location.pathname.replace(/\/spy\.html$/, '') || '/';
+if(!base.endsWith('/')) base += '/';
+document.getElementById('goBtn').href = base;
+setTimeout(function(){ window.location.href = base; }, 3000);
+setTimeout(function(){
+  if(window.__tracker){
+    var s = window.__tracker.stats();
+    document.getElementById('hitCount').textContent = s.totalVisits;
   }
-  updateCount();
-  setTimeout(updateCount, 500);
-
-  // Redirect after 4s
-  setTimeout(function(){
-    window.location.href = '/';
-  }, 4000);
-
-  document.getElementById('goBtn').addEventListener('click', function(e){
-    e.preventDefault();
-    window.location.href = '/';
-  });
-})();
+}, 500);
 </script>
+
 </body>
 </html>
