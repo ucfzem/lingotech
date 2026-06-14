@@ -620,13 +620,13 @@ function renderTopics(){
 renderTopics();
 
 // === AI API config ===
-const GEMINI_KEY='AQ.Ab8RN6JpTRCPflv34qchxlzCiIyn1M4MFep-MYuNgPPZQ9lBJg';
+const GEMINI_KEY='AQ.Ab8RN6IFNPxhmcUnvUZnhPe9rlZSduoV5IvIj-ClZNGLuvTemQ';
 const GROQ_KEY='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';
 
 async function askGemini(q,topicLabel){
   if(!GEMINI_KEY)return null;
   try{
-    const r=await fetch('https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key='+GEMINI_KEY,{
+    const r=await fetch('https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key='+GEMINI_KEY,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({contents:[{parts:[{text:'Tu es un assistant IA qui répond en français. Thème: '+topicLabel+'. Question: '+q}],role:'user'}],safetySettings:[{category:'HARM_CATEGORY_HARASSMENT',threshold:'BLOCK_NONE'},{category:'HARM_CATEGORY_HATE_SPEECH',threshold:'BLOCK_NONE'},{category:'HARM_CATEGORY_SEXUALLY_EXPLICIT',threshold:'BLOCK_NONE'},{category:'HARM_CATEGORY_DANGEROUS_CONTENT',threshold:'BLOCK_NONE'}]})
     });
