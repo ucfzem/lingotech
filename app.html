@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lingotech - Apprentissage Interactif</title>
+<style>
+:root{--bg-primary:#1a1410;--bg-secondary:#231b15;--bg-card:#2b2118;--bg-card-hover:#352920;--text-primary:#f7f1e6;--text-secondary:#c9b9a3;--accent-gold:#e3b04b;--accent-yellow:#f5d76e;--accent-gold-dim:rgba(227,176,75,0.15);--accent-yellow-dim:rgba(245,215,110,0.15);--gradient-1:linear-gradient(135deg,#caa15a,#f5d76e);--gradient-2:linear-gradient(135deg,#a9794a,#f5d76e);--border-color:rgba(245,235,220,0.08);--shadow:0 8px 32px rgba(0,0,0,0.45);--radius:16px;--radius-sm:10px}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg-primary);color:var(--text-primary);line-height:1.6;overflow-x:hidden}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.navbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(26,20,16,0.85);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-bottom:1px solid var(--border-color)}
+.nav-content{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:16px 24px}
+.nav-logo{font-size:1.5rem;font-weight:800;background:var(--gradient-1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+.nav-links{display:flex;gap:8px}
+.nav-link{color:var(--text-secondary);text-decoration:none;padding:8px 16px;border-radius:8px;transition:all .3s;font-size:.9rem;font-weight:500;cursor:pointer}
+.nav-link:hover,.nav-link.active{color:var(--text-primary);background:var(--accent-gold-dim)}
+.nav-toggle{display:none;background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer}
+.section{min-height:100vh;padding:100px 0 60px;display:none}
+.section.active{display:block;animation:fadeIn .5s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.section-header{text-align:center;margin-bottom:48px}
+.section-badge{display:inline-block;padding:6px 16px;background:var(--accent-gold-dim);color:var(--accent-gold);border-radius:50px;font-size:.8rem;font-weight:600;letter-spacing:.5px;margin-bottom:12px}
+.section-header h2{font-size:2.5rem;font-weight:800;margin-bottom:12px;background:var(--gradient-1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.section-header p{color:var(--text-secondary);font-size:1.1rem;max-width:600px;margin:0 auto}
+.hero{min-height:90vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;position:relative}
+.hero-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 20% 50%,rgba(227,176,75,0.10) 0%,transparent 50%),radial-gradient(ellipse at 80% 50%,rgba(245,215,110,0.08) 0%,transparent 50%);pointer-events:none;z-index:-1}
+.hero-badge{display:inline-block;padding:8px 20px;background:var(--accent-yellow-dim);color:var(--accent-yellow);border-radius:50px;font-size:.85rem;font-weight:600;margin-bottom:24px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.gradient-text{background:var(--gradient-1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-title{font-size:clamp(2.5rem,6vw,4.5rem);font-weight:800;line-height:1.1;margin-bottom:20px}
+.hero-subtitle{font-size:1.15rem;color:var(--text-secondary);max-width:600px;margin-bottom:36px;line-height:1.7}
+.hero-buttons{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:60px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:var(--radius-sm);font-size:1rem;font-weight:600;cursor:pointer;transition:all .3s;text-decoration:none;border:none;font-family:inherit}
+.btn-primary{background:var(--gradient-1);color:#1a1410;box-shadow:0 4px 20px rgba(227,176,75,0.3)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(227,176,75,0.4)}
+.btn-secondary{background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color)}
+.btn-secondary:hover{background:var(--bg-card-hover);transform:translateY(-2px)}
+.btn-small{padding:8px 16px;font-size:.85rem;background:var(--accent-yellow);color:#1a1410}
+.btn-full{width:100%;justify-content:center}
+.stats{display:flex;gap:32px;flex-wrap:wrap;justify-content:center}
+.stat-card{text-align:center;padding:24px 40px;background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border-color);min-width:160px}
+.stat-number{display:block;font-size:2.5rem;font-weight:800;background:var(--gradient-1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-label{color:var(--text-secondary);font-size:.9rem;margin-top:4px}
+.cl-form{max-width:800px;margin:0 auto;background:var(--bg-card);border-radius:var(--radius);padding:40px;border:1px solid var(--border-color)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group label{font-size:.9rem;font-weight:500;color:var(--text-secondary)}
+.form-input{padding:12px 16px;border-radius:var(--radius-sm);border:1px solid var(--border-color);background:var(--bg-primary);color:var(--text-primary);font-size:.95rem;font-family:inherit;transition:border-color .3s;outline:none}
+.form-input:focus{border-color:var(--accent-gold)}
+.form-input::placeholder{color:rgba(245,235,220,0.25)}
+select.form-input{cursor:pointer}
+.cl-loader{display:none;align-items:center;gap:12px;margin-top:20px;padding:20px;background:var(--bg-primary);border-radius:var(--radius-sm)}
+.cl-loader p{color:var(--text-secondary);font-size:.9rem}
+.spinner{width:24px;height:24px;border:3px solid var(--border-color);border-top-color:var(--accent-gold);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.cl-result{display:none;margin-top:24px}
+.cl-result-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.cl-result-header h3{font-size:1.2rem}
+.cl-text{background:var(--bg-primary);border-radius:var(--radius-sm);padding:24px;white-space:pre-wrap;line-height:1.8;border:1px solid var(--border-color);font-size:.95rem}
+.blog-filters{display:flex;gap:8px;justify-content:center;margin-bottom:36px;flex-wrap:wrap}
+.filter-btn{padding:10px 24px;border-radius:50px;border:1px solid var(--border-color);background:transparent;color:var(--text-secondary);font-size:.9rem;font-weight:500;cursor:pointer;transition:all .3s;font-family:inherit}
+.filter-btn:hover,.filter-btn.active{background:var(--accent-gold-dim);color:var(--accent-gold);border-color:var(--accent-gold)}
+.blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:24px}
+.blog-card{background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border-color);padding:28px;cursor:pointer;transition:all .3s}
+.blog-card:hover{transform:translateY(-4px);border-color:var(--accent-gold);box-shadow:var(--shadow)}
+.blog-level{display:inline-block;padding:4px 12px;border-radius:50px;font-size:.75rem;font-weight:600;margin-bottom:12px}
+.blog-level.debutant{background:var(--accent-yellow-dim);color:var(--accent-yellow)}
+.blog-level.intermediaire{background:rgba(201,166,107,0.18);color:#d9b97c}
+.blog-level.avance{background:var(--accent-gold-dim);color:var(--accent-gold)}
+.blog-card h3{font-size:1.2rem;margin-bottom:8px}
+.blog-card p{color:var(--text-secondary);font-size:.9rem;margin-bottom:16px}
+.blog-meta{display:flex;gap:16px;font-size:.8rem;color:var(--text-secondary)}
+#lesson-content{max-width:800px;margin:0 auto}
+.lesson-card{background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border-color);padding:36px;margin-bottom:24px}
+.lesson-card h2{font-size:1.8rem;margin-bottom:16px}
+.lesson-vocab{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
+.vocab-item{display:flex;justify-content:space-between;padding:12px 16px;background:var(--bg-primary);border-radius:var(--radius-sm);border:1px solid var(--border-color)}
+.vocab-word{font-weight:600}
+.vocab-trans{color:var(--text-secondary)}
+.lesson-grammar{background:var(--accent-gold-dim);border-left:3px solid var(--accent-gold);padding:20px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;margin:20px 0}
+.lesson-grammar h4{color:var(--accent-gold);margin-bottom:8px}
+.lesson-examples{margin:16px 0}
+.example-item{padding:12px 16px;border-left:3px solid var(--accent-yellow);background:var(--bg-primary);border-radius:0 var(--radius-sm)var(--radius-sm) 0;margin-bottom:8px}
+.quiz-block{background:var(--bg-primary);border-radius:var(--radius);padding:24px;margin-top:24px}
+.quiz-block h4{margin-bottom:16px}
+.quiz-question-item{margin-bottom:20px}
+.quiz-question-item p{margin-bottom:8px;font-weight:500}
+.quiz-question-item label{display:block;padding:10px 16px;margin-bottom:4px;border-radius:var(--radius-sm);background:var(--bg-card);cursor:pointer;transition:background .2s;font-size:.9rem;border:1px solid transparent}
+.quiz-question-item label:hover{background:var(--bg-card-hover)}
+.quiz-question-item input[type="radio"]{margin-right:8px}
+.quiz-question-item label.correct{background:var(--accent-yellow-dim);border-color:var(--accent-yellow)}
+.quiz-question-item label.wrong{background:var(--accent-gold-dim);border-color:var(--accent-gold)}
+.lesson-submit-btn{margin-top:16px;padding:12px 32px;background:var(--gradient-1);color:#1a1410;border:none;border-radius:var(--radius-sm);font-size:1rem;font-weight:600;cursor:pointer;font-family:inherit;transition:transform .2s}
+.lesson-submit-btn:hover{transform:translateY(-2px)}
+.quiz-score-display{text-align:center;font-size:2rem;font-weight:800;padding:20px;margin-top:16px;background:var(--bg-card);border-radius:var(--radius-sm)}
+.mb-2{margin-bottom:16px}
+.tabs{display:flex;gap:4px;margin-bottom:32px;background:var(--bg-card);border-radius:var(--radius-sm);padding:4px;overflow-x:auto}
+.tab-btn{padding:12px 24px;border:none;background:transparent;color:var(--text-secondary);font-size:.9rem;font-weight:500;cursor:pointer;border-radius:8px;transition:all .3s;white-space:nowrap;font-family:inherit}
+.tab-btn:hover{color:var(--text-primary)}
+.tab-btn.active{background:var(--accent-gold-dim);color:var(--accent-gold)}
+.tab-content{display:none}
+.tab-content.active{display:block;animation:fadeIn .4s ease}
+.tool-card{background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border-color);padding:36px}
+.tool-card h3{font-size:1.5rem;margin-bottom:8px}
+.tool-card>p{color:var(--text-secondary);margin-bottom:24px}
+.conj-controls{display:flex;gap:12px;margin-bottom:24px}
+.conj-controls .form-input{flex:1}
+.conj-result{display:grid;gap:8px}
+.conj-row{display:grid;grid-template-columns:140px 1fr;padding:10px 16px;background:var(--bg-primary);border-radius:var(--radius-sm);align-items:center}
+.conj-tense{font-weight:600;font-size:.85rem;color:var(--accent-gold)}
+.conj-form{color:var(--text-primary)}
+.trans-controls{display:flex;flex-direction:column;gap:12px}
+.trans-select{max-width:250px}
+.trans-input{resize:vertical;min-height:120px}
+.trans-loader{display:none;align-items:center;gap:12px;margin-top:16px;padding:16px;background:var(--bg-primary);border-radius:var(--radius-sm)}
+.trans-loader p{color:var(--text-secondary);font-size:.9rem}
+.trans-result{margin-top:16px;padding:20px;background:var(--bg-primary);border-radius:var(--radius-sm);border:1px solid var(--border-color);white-space:pre-wrap;line-height:1.7;display:none}
+.pomodoro-card{text-align:center}
+.pomodoro-display{position:relative;width:220px;height:220px;margin:0 auto 24px}
+.pomodoro-ring{transform:rotate(-90deg);width:100%;height:100%}
+.ring-bg{fill:none;stroke:var(--bg-primary);stroke-width:8}
+.ring-progress{fill:none;stroke:var(--accent-gold);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .5s}
+.pomodoro-time{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:3rem;font-weight:800;letter-spacing:2px}
+.pomodoro-phase{font-size:1.1rem;font-weight:600;color:var(--accent-yellow);margin-bottom:20px}
+.pomodoro-controls{display:flex;gap:12px;justify-content:center;margin-bottom:16px}
+.pomodoro-sessions{color:var(--text-secondary);font-size:.9rem}
+#quiz-area{min-height:300px}
+#quiz-start,#quiz-result{text-align:center;padding:40px 0}
+.quiz-progress{font-size:.9rem;color:var(--text-secondary);margin-bottom:20px;font-weight:500}
+.quiz-question{font-size:1.3rem;font-weight:600;margin-bottom:20px;line-height:1.5}
+.quiz-options{display:flex;flex-direction:column;gap:8px}
+.quiz-option{padding:14px 20px;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:var(--radius-sm);cursor:pointer;transition:all .3s;text-align:left;font-size:1rem}
+.quiz-option:hover{border-color:var(--accent-gold);background:var(--accent-gold-dim)}
+.quiz-option.correct{border-color:var(--accent-yellow);background:var(--accent-yellow-dim)}
+.quiz-option.wrong{border-color:var(--accent-gold);background:var(--accent-gold-dim)}
+.quiz-score{font-size:2.5rem;font-weight:800;margin-bottom:16px}
+.quiz-score .score-num{background:var(--gradient-1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.donate-card{max-width:600px;margin:0 auto;background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border-color);padding:40px}
+.donate-progress-container{margin-bottom:32px}
+.donate-stats{display:flex;justify-content:space-between;margin-bottom:12px;font-size:.9rem}
+.donate-bar{height:12px;background:var(--bg-primary);border-radius:50px;overflow:hidden}
+.donate-fill{height:100%;background:var(--gradient-1);border-radius:50px;transition:width 1s ease}
+.donate-percent{display:block;text-align:right;font-size:.85rem;color:var(--text-secondary);margin-top:4px}
+.donate-amounts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.donate-btn{padding:12px 20px;border-radius:var(--radius-sm);border:1px solid var(--border-color);background:var(--bg-primary);color:var(--text-primary);font-size:1rem;font-weight:600;cursor:pointer;transition:all .3s;font-family:inherit;flex:1;min-width:70px}
+.donate-btn:hover,.donate-btn.active{border-color:var(--accent-gold);background:var(--accent-gold-dim);color:var(--accent-gold)}
+.donate-custom{display:flex;align-items:center;gap:8px;flex:1;min-width:140px}
+.donate-custom span{color:var(--text-secondary);font-weight:600;font-size:1.1rem}
+.donate-custom input{width:100%}
+.donate-payment{margin-bottom:24px}
+.donate-payment p{font-size:.85rem;color:var(--text-secondary);margin-bottom:8px}
+.payment-methods{display:flex;gap:8px;flex-wrap:wrap}
+.payment-badge{padding:6px 14px;background:var(--bg-primary);border-radius:50px;font-size:.8rem;border:1px solid var(--border-color)}
+.donate-thanks{text-align:center;padding:32px;animation:fadeIn .5s ease}
+.donate-heart{font-size:3rem;margin-bottom:16px;animation:heartBeat 1s ease infinite}
+@keyframes heartBeat{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.donate-thanks h3{font-size:1.5rem;margin-bottom:12px;background:var(--gradient-1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.donate-thanks p{color:var(--text-secondary)}
+.footer{border-top:1px solid var(--border-color);padding:48px 0 24px;margin-top:40px}
+.footer-content{display:flex;justify-content:space-between;gap:40px;margin-bottom:32px;flex-wrap:wrap}
+.footer-brand h3{font-size:1.3rem;margin-bottom:8px;background:var(--gradient-1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.footer-brand p{color:var(--text-secondary);font-size:.9rem;max-width:300px}
+.footer-links h4{font-size:.9rem;margin-bottom:12px;color:var(--text-secondary)}
+.footer-links{display:flex;flex-direction:column;gap:8px}
+.footer-links a{color:var(--text-primary);text-decoration:none;font-size:.9rem;transition:color .3s;cursor:pointer}
+.footer-links a:hover{color:var(--accent-gold)}
+.footer-bottom{text-align:center;padding-top:24px;border-top:1px solid var(--border-color)}
+.footer-bottom p{color:var(--text-secondary);font-size:.85rem}
+@media(max-width:768px){.nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:rgba(26,20,16,0.98);flex-direction:column;padding:16px;border-bottom:1px solid var(--border-color)}.nav-links.open{display:flex}.nav-toggle{display:block}.form-grid{grid-template-columns:1fr}.stats{flex-direction:column;align-items:center}.stat-card{width:100%;max-width:280px}.blog-grid{grid-template-columns:1fr}.lesson-vocab{grid-template-columns:1fr}.section-header h2{font-size:1.8rem}}
+@media(max-width:480px){.donate-amounts{flex-direction:column}.footer-content{flex-direction:column}}
+</style>
+<meta name="theme-color" content="#1a1410" />
+</head>
+<body>
+
+<nav class="navbar"><div class="nav-content">
+<a href="#" class="nav-logo" data-nav="home">Lingotech</a>
+<div class="nav-links">
+<a href="#home" class="nav-link active">Accueil</a>
+<a href="#cover-letter" class="nav-link">Lettre</a>
+<a href="#blog" class="nav-link">Blog</a>
+<a href="#tools" class="nav-link">Outils</a>
+<a href="#donate" class="nav-link">Dons</a>
+</div>
+<button class="nav-toggle" aria-label="Menu">&#9776;</button>
+</div></nav>
+
+<section id="home" class="section active">
+<div class="hero-bg"></div>
+<div class="hero">
+<div class="hero-badge">Plateforme éducative nouvelle génération</div>
+<h1 class="hero-title">Maîtrisez l'anglais<br>avec <span class="gradient-text">l'intelligence artificielle</span></h1>
+<p class="hero-subtitle">Des outils interactifs, des leçons structurées et un générateur de lettres de motivation propulsé par l'IA pour accélérer votre apprentissage.</p>
+<div class="hero-buttons">
+<a href="#blog" class="btn btn-primary">Commencer les leçons</a>
+<a href="#tools" class="btn btn-secondary">Explorer les outils</a>
+</div>
+<div class="stats">
+<div class="stat-card"><span class="stat-number" data-target="12">0</span><span class="stat-label">Leçons interactives</span></div>
+<div class="stat-card"><span class="stat-number" data-target="150">0</span><span class="stat-label">Verbes conjugués</span></div>
+<div class="stat-card"><span class="stat-number" data-target="5000">0</span><span class="stat-label">Étudiants actifs</span></div>
+</div>
+</div>
+</section>
+
+<section id="cover-letter" class="section">
+<div class="container">
+<div class="section-header"><span class="section-badge">IA & Rédaction</span><h2>Générateur de Lettre de Motivation</h2><p>Rédigez une lettre professionnelle personnalisée en quelques secondes.</p></div>
+<div class="cl-form">
+<div class="form-grid">
+<div class="form-group"><label>Votre nom complet</label><input type="text" id="cl-name" placeholder="Jean Dupont" class="form-input"></div>
+<div class="form-group"><label>Poste visé</label><input type="text" id="cl-position" placeholder="Développeur Full Stack" class="form-input"></div>
+<div class="form-group"><label>Nom de l'entreprise</label><input type="text" id="cl-company" placeholder="TechCorp" class="form-input"></div>
+<div class="form-group"><label>Secteur d'activité</label><select id="cl-sector" class="form-input"><option>Technologie</option><option>Finance</option><option>Santé</option><option>Éducation</option><option>Marketing</option><option>Commerce</option><option>Autre</option></select></div>
+<div class="form-group"><label>Vos compétences clés</label><input type="text" id="cl-skills" placeholder="JavaScript, React, Node.js" class="form-input"></div>
+<div class="form-group"><label>Ton de la lettre</label><select id="cl-tone" class="form-input"><option>Professionnel</option><option>Dynamique</option><option>Créatif</option><option>Formel</option></select></div>
+</div>
+<button id="cl-generate" class="btn btn-primary btn-full">Générer la lettre</button>
+<div class="cl-loader" id="cl-loader"><div class="spinner"></div><p>Génération de votre lettre personnalisée...</p></div>
+<div class="cl-result" id="cl-result">
+<div class="cl-result-header"><h3>Votre lettre de motivation</h3><button id="cl-copy" class="btn btn-small">Copier</button></div>
+<div id="cl-text" class="cl-text"></div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="blog" class="section">
+<div class="container">
+<div class="section-header"><span class="section-badge">Apprentissage</span><h2>Blog Anglais Interactif</h2><p>6 leçons complètes avec vocabulaire, grammaire et quiz intégrés.</p></div>
+<div class="blog-filters">
+<button class="filter-btn active" data-level="all">Tous</button>
+<button class="filter-btn" data-level="debutant">Débutant</button>
+<button class="filter-btn" data-level="intermediaire">Intermédiaire</button>
+<button class="filter-btn" data-level="avance">Avancé</button>
+</div>
+<div class="blog-grid" id="blog-grid"></div>
+</div>
+</section>
+
+<section id="lesson-view" class="section">
+<div class="container">
+<button id="lesson-back" class="btn btn-secondary mb-2">&larr; Retour aux leçons</button>
+<div id="lesson-content"></div>
+</div>
+</section>
+
+<section id="tools" class="section">
+<div class="container">
+<div class="section-header"><span class="section-badge">Outils interactifs</span><h2>Boîte à outils</h2><p>4 outils puissants pour maîtriser l'anglais au quotidien.</p></div>
+<div class="tabs">
+<button class="tab-btn active" data-tab="conjugator">Conjugateur</button>
+<button class="tab-btn" data-tab="translator">Traducteur IA</button>
+<button class="tab-btn" data-tab="pomodoro">Pomodoro</button>
+<button class="tab-btn" data-tab="quiz">Quiz rapide</button>
+</div>
+<div class="tab-content active" id="tab-conjugator"><div class="tool-card"><h3>Conjugaison Anglais</h3><p>Conjuguez n'importe quel verbe anglais à tous les temps.</p><div class="conj-controls"><input type="text" id="conj-input" placeholder="Entrez un verbe (ex: speak, go, eat)" class="form-input"><button id="conj-btn" class="btn btn-primary">Conjuguer</button></div><div id="conj-result" class="conj-result"></div></div></div>
+<div class="tab-content" id="tab-translator"><div class="tool-card"><h3>Traducteur IA Français ↔ Anglais</h3><p>Traduction contextuelle de qualité professionnelle.</p><div class="trans-controls"><select id="trans-dir" class="form-input trans-select"><option value="fr-en">Français → Anglais</option><option value="en-fr">Anglais → Français</option></select><textarea id="trans-input" class="form-input trans-input" placeholder="Texte à traduire..." rows="4"></textarea><button id="trans-btn" class="btn btn-primary">Traduire</button></div><div class="trans-loader" id="trans-loader"><div class="spinner"></div><p>Traduction en cours...</p></div><div id="trans-result" class="trans-result"></div></div></div>
+<div class="tab-content" id="tab-pomodoro"><div class="tool-card pomodoro-card"><h3>Timer Pomodoro</h3><div class="pomodoro-display"><svg class="pomodoro-ring" viewBox="0 0 200 200"><circle cx="100" cy="100" r="90" class="ring-bg"/><circle cx="100" cy="100" r="90" class="ring-progress" id="pomodoro-ring"/></svg><div class="pomodoro-time" id="pomodoro-time">25:00</div></div><div class="pomodoro-phase" id="pomodoro-phase">Focus</div><div class="pomodoro-controls"><button id="pomodoro-start" class="btn btn-primary">Démarrer</button><button id="pomodoro-pause" class="btn btn-secondary">Pause</button><button id="pomodoro-reset" class="btn btn-secondary">Reset</button></div><div class="pomodoro-sessions">Sessions complétées : <strong id="pomodoro-count">0</strong></div></div></div>
+<div class="tab-content" id="tab-quiz"><div class="tool-card"><h3>Quiz Rapide d'Anglais</h3><p>Testez vos connaissances avec 5 questions aléatoires.</p><div id="quiz-area"><div id="quiz-start"><button id="quiz-begin" class="btn btn-primary">Commencer le quiz</button></div><div id="quiz-playing" style="display:none"><div class="quiz-progress" id="quiz-progress">Question 1/5</div><div class="quiz-question" id="quiz-question"></div><div class="quiz-options" id="quiz-options"></div></div><div id="quiz-result" style="display:none"><div class="quiz-score" id="quiz-score"></div><button id="quiz-retry" class="btn btn-primary">Rejouer</button></div></div></div></div>
+</div>
+</section>
+
+<section id="donate" class="section">
+<div class="container">
+<div class="section-header"><span class="section-badge">Soutien</span><h2>Soutenez notre projet</h2><p>Votre don nous permet de créer plus de contenu éducatif gratuit.</p></div>
+<div class="donate-card">
+<div class="donate-progress-container">
+<div class="donate-stats"><span>Objectif : <strong>5 000 €</strong></span><span>Collectés : <strong id="donate-raised">3 247 €</strong></span></div>
+<div class="donate-bar"><div class="donate-fill" id="donate-fill" style="width:65%"></div></div><span class="donate-percent" id="donate-percent">65%</span>
+</div>
+<div class="donate-amounts">
+<button class="donate-btn" data-amount="5">5 €</button>
+<button class="donate-btn" data-amount="10">10 €</button>
+<button class="donate-btn active" data-amount="25">25 €</button>
+<button class="donate-btn" data-amount="50">50 €</button>
+<button class="donate-btn" data-amount="100">100 €</button>
+<div class="donate-custom"><span>€</span><input type="number" id="donate-custom" placeholder="Montant libre" min="1" class="form-input"></div>
+</div>
+<div class="donate-payment"><p>Moyens de paiement acceptés :</p><div class="payment-methods"><span class="payment-badge">Carte bancaire</span><span class="payment-badge">PayPal</span><span class="payment-badge">Apple Pay</span><span class="payment-badge">Google Pay</span></div></div>
+<button id="donate-btn" class="btn btn-primary btn-full">Faire un don de <span id="donate-amount-display">25 €</span></button>
+<div id="donate-thanks" class="donate-thanks" style="display:none"><div class="donate-heart">&#10084;</div><h3>Merci infiniment pour votre générosité !</h3><p>Grâce à vous, nous pouvons continuer à développer des outils éducatifs gratuits.</p></div>
+</div>
+</div>
+</section>
+
+<footer class="footer"><div class="container">
+<div class="footer-content">
+<div class="footer-brand"><h3>Lingotech</h3><p>Plateforme éducative interactive propulsée par l'IA.</p></div>
+<div class="footer-links"><h4>Navigation</h4>
+<a data-nav="home">Accueil</a>
+<a data-nav="cover-letter">Lettre de motivation</a>
+<a data-nav="blog">Blog anglais</a>
+<a data-nav="tools">Outils</a>
+<a data-nav="donate">Dons</a>
+</div>
+</div>
+<div class="footer-bottom"><p>&copy; 2026 Lingotech. Tous droits réservés.</p></div>
+</div></footer>
+
+<script>
+(function(){'use strict';
+const $=(s,p=document)=>p.querySelector(s);
+const $$=(s,p=document)=>[...p.querySelectorAll(s)];
+
+const state={currentSection:'home',pomodoro:{running:false,paused:false,time:1500,phase:'focus',count:0,interval:null},quiz:{questions:[],current:0,score:0,answered:false},donateAmount:25};
+let countersStarted=false;
+
+function navigate(id){
+  $$('.section').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el)el.classList.add('active');
+  state.currentSection=id;
+  $$('.nav-link').forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+id));
+  if(id==='home'&&!countersStarted){countersStarted=true;startCounters()}
+  if(id==='donate')animateDonateBar();
+}
+
+function startCounters(){
+  $$('.stat-number').forEach(c=>{
+    const t=parseInt(c.dataset.target),s=performance.now();
+    function u(n){const p=Math.min((n-s)/2000,1);c.textContent=Math.floor((1-Math.pow(1-p,3))*t);if(p<1)requestAnimationFrame(u)}
+    requestAnimationFrame(u);
+  });
+}
+
+document.querySelectorAll('[data-nav]').forEach(l=>l.addEventListener('click',e=>{e.preventDefault();const id=l.dataset.nav;navigate(id);history.replaceState(null,'','#'+id);}));
+$$('.nav-link').forEach(l=>l.addEventListener('click',e=>{e.preventDefault();$('.nav-links').classList.remove('open');const id=l.getAttribute('href').slice(1);navigate(id);history.replaceState(null,'','#'+id);}));
+$('.nav-toggle').addEventListener('click',()=>{$('.nav-links').classList.toggle('open');});
+window.addEventListener('hashchange',()=>{const id=location.hash.slice(1)||'home';navigate(id);});
+
+$('#cl-generate').addEventListener('click',async()=>{
+  const f={name:$('#cl-name').value.trim(),position:$('#cl-position').value.trim(),company:$('#cl-company').value.trim(),sector:$('#cl-sector').value,skills:$('#cl-skills').value.trim(),tone:$('#cl-tone').value};
+  if(!f.name||!f.position||!f.company||!f.skills){alert('Veuillez remplir tous les champs requis.');return}
+  const l=$('#cl-loader'),r=$('#cl-result');l.style.display='flex';r.style.display='none';
+  try{
+    const letter=await(async(p)=>{
+      const r=await fetch('https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({inputs:'<|system|>\nYou write cover letters in French.</s>\n<|user|>\n'+p+'</s>\n<|assistant|>\n',parameters:{max_new_tokens:600,temperature:0.7}})});
+      if(!r.ok)throw Error();
+      const d=await r.json();
+      if(d.error)throw Error();
+      const t=Array.isArray(d)?d[0].generated_text:d.generated_text;
+      const m=t.match(/<\|assistant\|>\n([\s\S]*)$/);
+      return m?m[1].trim():t.trim();
+    })('Rédige une lettre de motivation en français, ton '+f.tone.toLowerCase()+', pour '+f.name+' postulant au poste de '+f.position+' chez '+f.company+' (secteur: '+f.sector+'). Compétences: '+f.skills+'. Structure: objet, introduction, corps, conclusion polie. Signature: '+f.name+'.');
+    $('#cl-text').textContent=letter;r.style.display='block';
+  }catch{
+    const tone=f.tone;
+    $('#cl-text').textContent='Objet : Candidature au poste de '+f.position+'\n\n'+(tone==='Formel'?'Madame, Monsieur,':'Bonjour,')+'\n\nJe me permets de vous adresser ma candidature pour le poste de '+f.position+' au sein de '+f.company+'. '+(tone==='Dynamique'?'Passionné(e) et déterminé(e), je souhaite mettre mes compétences au service de votre entreprise.':tone==='Créatif'?'Convaincu(e) que la créativité est le moteur de l\'innovation, je souhaite apporter une vision nouvelle à votre équipe.':'Fort(e) de mon expérience et de mes compétences, je suis convaincu(e) de pouvoir contribuer efficacement à vos projets.')+'\n\nDans le secteur '+f.sector+', je dispose de compétences solides en '+f.skills+'. Ces atouts me permettent d\'aborder les défis avec rigueur et passion.\n\nJe me tiens à votre disposition pour un entretien afin de vous exposer plus en détail ma motivation et mon parcours.\n\nDans l\'attente de votre retour, veuillez agréer l\'expression de mes salutations distinguées.\n\n'+f.name;
+    r.style.display='block';
+  }finally{l.style.display='none'}
+});
+$('#cl-copy').addEventListener('click',async()=>{
+  try{await navigator.clipboard.writeText($('#cl-text').textContent);const b=$('#cl-copy');b.textContent='Copié !';setTimeout(()=>b.textContent='Copier',2000)}catch{alert('Copiez le texte manuellement (Ctrl+C)')}
+});
+
+const LESSONS=[
+{id:1,title:'Greetings & Introductions',level:'debutant',desc:'Salutations et présentations de base.',vocab:[{word:'Hello',trans:'Bonjour'},{word:'Good morning',trans:'Bonjour (matin)'},{word:'Good evening',trans:'Bonsoir'},{word:'Nice to meet you',trans:'Enchanté'},{word:'How are you?',trans:'Comment allez-vous ?'},{word:'My name is...',trans:'Je m\'appelle...'}],grammar:'Le verbe "to be" : I am, you are, he/she/it is, we are, they are.',examples:['Hello, my name is John.','Good morning, how are you?','Nice to meet you, Sarah.'],questions:[{q:'Comment dit-on "Bonjour" le matin ?',opts:['Good evening','Good morning','Hello','Good night'],correct:1},{q:'Que signifie "Nice to meet you" ?',opts:['Au revoir','Enchanté','Bonjour','Merci'],correct:1},{q:'Comment dit-on "Je m\'appelle" ?',opts:['I am','My name is','I have','This is'],correct:1}]},
+{id:2,title:'Numbers & Time',level:'debutant',desc:'Nombres, heure et jours de la semaine.',vocab:[{word:'One / Two / Three',trans:'Un / Deux / Trois'},{word:'Monday',trans:'Lundi'},{word:'What time is it?',trans:'Quelle heure est-il ?'},{word:'Today',trans:'Aujourd\'hui'},{word:'Tomorrow',trans:'Demain'},{word:'Yesterday',trans:'Hier'}],grammar:'"It is + hour + minutes". AM = matin, PM = après-midi.',examples:['It is 9:00 AM.','Today is Monday.','See you tomorrow!'],questions:[{q:'Comment dit-on "Lundi" ?',opts:['Sunday','Tuesday','Monday','Friday'],correct:2},{q:'Que signifie "What time is it?"',opts:['Quel jour sommes-nous ?','Quelle heure est-il ?','Comment ça va ?','Où es-tu ?'],correct:1},{q:'Comment dit-on "Demain" ?',opts:['Yesterday','Today','Tomorrow','Tonight'],correct:2}]},
+{id:3,title:'Daily Routines',level:'intermediaire',desc:'Décrivez votre routine quotidienne.',vocab:[{word:'Wake up',trans:'Se réveiller'},{word:'Get dressed',trans:'S\'habiller'},{word:'Have breakfast',trans:'Petit-déjeuner'},{word:'Go to work',trans:'Aller au travail'},{word:'Come back home',trans:'Rentrer'},{word:'Go to bed',trans:'Se coucher'}],grammar:'Présent simple : 3e personne +s. Ex: "She wakes up at 7am."',examples:['I wake up at 6:30.','She goes to work by bus.','They have dinner at 8pm.'],questions:[{q:'Que signifie "Wake up" ?',opts:['Se lever','Se réveiller','Se laver','S\'habiller'],correct:1},{q:'Complétez : "She ___ to work."',opts:['go','goes','going','gone'],correct:1},{q:'"Have breakfast" signifie ?',opts:['Déjeuner','Dîner','Petit-déjeuner','Goûter'],correct:2}]},
+{id:4,title:'Travel & Directions',level:'intermediaire',desc:'Vocabulaire pour voyager.',vocab:[{word:'Where is...?',trans:'Où se trouve... ?'},{word:'Turn left/right',trans:'Tournez à gauche/droite'},{word:'Straight ahead',trans:'Tout droit'},{word:'Train station',trans:'Gare'},{word:'Airport',trans:'Aéroport'},{word:'How much?',trans:'Combien ?'}],grammar:'"Where is the nearest station?" - "Can you help me?"',examples:['Excuse me, where is the museum?','Turn left at the traffic lights.','The hotel is straight ahead.'],questions:[{q:'Comment dit-on "Tournez à droite" ?',opts:['Turn left','Go straight','Turn right','Stop here'],correct:2},{q:'"How much does it cost?" signifie ?',opts:['Où est-ce ?','Combien ça coûte ?','Comment ça marche ?','Quand ça ouvre ?'],correct:1},{q:'"Straight ahead" = ?',opts:['À gauche','En arrière','Tout droit','À droite'],correct:2}]},
+{id:5,title:'Business English',level:'avance',desc:'Langage professionnel.',vocab:[{word:'Meeting',trans:'Réunion'},{word:'Deadline',trans:'Date limite'},{word:'Budget',trans:'Budget'},{word:'Agenda',trans:'Ordre du jour'},{word:'Proposal',trans:'Proposition'},{word:'Negotiate',trans:'Négocier'}],grammar:'Conditionnel pour la politesse : "I would suggest..."',examples:['I would like to schedule a meeting.','We need to meet the deadline.','Thank you for your proposal.'],questions:[{q:'Que signifie "Deadline" ?',opts:['Ligne d\'arrivée','Date limite','Retard','Avance'],correct:1},{q:'Comment dit-on "Réunion" ?',opts:['Meeting','Appointment','Session','Gathering'],correct:0},{q:'"I would suggest" = ?',opts:['Je suggère (poli)','Je dois','Je veux','Je refuse'],correct:0}]},
+{id:6,title:'Idioms & Phrasal Verbs',level:'avance',desc:'Expressions idiomatiques.',vocab:[{word:'Break down',trans:'Tomber en panne'},{word:'Look forward to',trans:'Avoir hâte de'},{word:'Give up',trans:'Abandonner'},{word:'Piece of cake',trans:'Facile'},{word:'Once in a blue moon',trans:'Tous les 36 du mois'},{word:'Hit the nail',trans:'Mettre le doigt dessus'}],grammar:'Les phrasal verbs = verbe + préposition qui change le sens.',examples:['My car broke down.','I\'m looking forward to the weekend.','The exam was a piece of cake!'],questions:[{q:'"Piece of cake" = ?',opts:['Difficile','Délicieux','Facile','Cher'],correct:2},{q:'"Give up" = ?',opts:['Donner','Abandonner','Recevoir','Distribuer'],correct:1},{q:'"Look forward to" = ?',opts:['Regarder devant','Avoir hâte de','Chercher','Attendre'],correct:1}]}
+];
+
+function renderBlog(){
+  const g=$('#blog-grid');
+  g.innerHTML=LESSONS.map(l=>'<div class="blog-card" data-lesson="'+l.id+'"><span class="blog-level '+l.level+'">'+l.level.charAt(0).toUpperCase()+l.level.slice(1)+'</span><h3>'+l.title+'</h3><p>'+l.desc+'</p><div class="blog-meta"><span>'+l.vocab.length+' mots</span><span>'+l.questions.length+' questions</span></div></div>').join('');
+  $$('.blog-card').forEach(c=>c.addEventListener('click',()=>openLesson(parseInt(c.dataset.lesson))));
+}
+
+function openLesson(id){
+  const l=LESSONS.find(x=>x.id===id);if(!l)return;
+  const c=$('#lesson-content');
+  c.innerHTML='<div class="lesson-card"><span class="blog-level '+l.level+'">'+(l.level.charAt(0).toUpperCase()+l.level.slice(1))+'</span><h2>'+l.title+'</h2><p>'+l.desc+'</p><h4 style="margin-top:24px;margin-bottom:12px;color:var(--accent-yellow)">Vocabulaire</h4><div class="lesson-vocab">'+l.vocab.map(v=>'<div class="vocab-item"><span class="vocab-word">'+v.word+'</span><span class="vocab-trans">'+v.trans+'</span></div>').join('')+'</div><div class="lesson-grammar"><h4>Règle de grammaire</h4><p>'+l.grammar+'</p></div><h4 style="margin-top:20px;margin-bottom:12px;color:var(--accent-yellow)">Exemples</h4><div class="lesson-examples">'+l.examples.map(e=>'<div class="example-item">'+e+'</div>').join('')+'</div><div class="quiz-block"><h4>Quiz de la leçon</h4><div class="quiz-questions"></div><button class="lesson-submit-btn">Vérifier mes réponses</button><div class="quiz-score-display" style="display:none"></div></div></div>';
+  const qc=c.querySelector('.quiz-questions');
+  l.questions.forEach((q,qi)=>{const d=document.createElement('div');d.className='quiz-question-item';d.innerHTML='<p>'+(qi+1)+'. '+q.q+'</p>'+q.opts.map((o,oi)=>'<label><input type="radio" name="q'+qi+'" value="'+oi+'"> '+o+'</label>').join('');qc.appendChild(d);});
+  c.querySelector('.lesson-submit-btn').addEventListener('click',()=>{checkLessonQuiz(l.id)});
+  navigate('lesson-view');
+}
+
+function checkLessonQuiz(id){
+  const l=LESSONS.find(x=>x.id===id);if(!l)return;let c=0;
+  $$('.quiz-question-item').forEach((item,qi)=>{
+    const sel=item.querySelector('input[type="radio"]:checked');
+    item.querySelectorAll('label').forEach((lb,oi)=>{
+      lb.classList.remove('correct','wrong');
+      if(oi===l.questions[qi].correct)lb.classList.add('correct');
+      if(sel&&parseInt(sel.value)===oi&&oi!==l.questions[qi].correct)lb.classList.add('wrong');
+    });
+    if(sel&&parseInt(sel.value)===l.questions[qi].correct)c++;
+  });
+  const d=document.querySelector('.quiz-score-display');d.style.display='block';d.textContent=c+'/'+l.questions.length+' correctes';d.style.color=c===l.questions.length?'var(--accent-yellow)':'var(--accent-gold)';
+}
+
+$('#lesson-back').addEventListener('click',()=>navigate('blog'));
+
+$$('.filter-btn').forEach(b=>b.addEventListener('click',()=>{
+  $$('.filter-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+  $$('.blog-card').forEach(c=>{const l=LESSONS.find(x=>x.id===parseInt(c.dataset.lesson));c.style.display=b.dataset.level==='all'||l.level===b.dataset.level?'block':'none';});
+}));
+
+const VERBS={be:{type:'irrégulier',forms:{Infinitif:'be','Présent (I)':'am','Présent (You/We/They)':'are','Présent (He/She/It)':'is','Prétérit (I/He/She/It)':'was','Prétérit (You/We/They)':'were','Participe passé':'been','Présent continu (I)':'am being','Futur':'will be','Conditionnel':'would be','Present Perfect':'have/has been','Impératif':'be'}},have:{type:'irrégulier',forms:{Infinitif:'have','Présent (I/You/We/They)':'have','Présent (He/She/It)':'has','Prétérit':'had','Participe passé':'had','Présent continu':'am/is/are having','Futur':'will have','Conditionnel':'would have','Present Perfect':'have/has had','Impératif':'have'}},go:{type:'irrégulier',forms:{Infinitif:'go','Présent (I/You/We/They)':'go','Présent (He/She/It)':'goes','Prétérit':'went','Participe passé':'gone','Présent continu':'am/is/are going','Futur':'will go','Conditionnel':'would go','Present Perfect':'have/has gone','Impératif':'go'}},say:{type:'irrégulier',forms:{Infinitif:'say','Présent (I/You/We/They)':'say','Présent (He/She/It)':'says','Prétérit':'said','Participe passé':'said','Présent continu':'am/is/are saying','Futur':'will say','Conditionnel':'would say','Present Perfect':'have/has said','Impératif':'say'}},get:{type:'irrégulier',forms:{Infinitif:'get','Présent (I/You/We/They)':'get','Présent (He/She/It)':'gets','Prétérit':'got','Participe passé':'gotten','Présent continu':'am/is/are getting','Futur':'will get','Conditionnel':'would get','Present Perfect':'have/has got','Impératif':'get'}},make:{type:'irrégulier',forms:{Infinitif:'make','Présent (I/You/We/They)':'make','Présent (He/She/It)':'makes','Prétérit':'made','Participe passé':'made','Présent continu':'am/is/are making','Futur':'will make','Conditionnel':'would make','Present Perfect':'have/has made','Impératif':'make'}},eat:{type:'irrégulier',forms:{Infinitif:'eat','Présent (I/You/We/They)':'eat','Présent (He/She/It)':'eats','Prétérit':'ate','Participe passé':'eaten','Présent continu':'am/is/are eating','Futur':'will eat','Conditionnel':'would eat','Present Perfect':'have/has eaten','Impératif':'eat'}},speak:{type:'irrégulier',forms:{Infinitif:'speak','Présent (I/You/We/They)':'speak','Présent (He/She/It)':'speaks','Prétérit':'spoke','Participe passé':'spoken','Présent continu':'am/is/are speaking','Futur':'will speak','Conditionnel':'would speak','Present Perfect':'have/has spoken','Impératif':'speak'}},work:{type:'régulier',forms:{Infinitif:'work','Présent (I/You/We/They)':'work','Présent (He/She/It)':'works','Prétérit':'worked','Participe passé':'worked','Présent continu':'am/is/are working','Futur':'will work','Conditionnel':'would work','Present Perfect':'have/has worked','Impératif':'work'}},play:{type:'régulier',forms:{Infinitif:'play','Présent (I/You/We/They)':'play','Présent (He/She/It)':'plays','Prétérit':'played','Participe passé':'played','Présent continu':'am/is/are playing','Futur':'will play','Conditionnel':'would play','Present Perfect':'have/has played','Impératif':'play'}},study:{type:'régulier',forms:{Infinitif:'study','Présent (I/You/We/They)':'study','Présent (He/She/It)':'studies','Prétérit':'studied','Participe passé':'studied','Présent continu':'am/is/are studying','Futur':'will study','Conditionnel':'would study','Present Perfect':'have/has studied','Impératif':'study'}}};
+
+function conjugateVerb(v){
+  v=v.toLowerCase().trim();
+  if(VERBS[v])return VERBS[v];
+  const m=Object.keys(VERBS).find(k=>v.startsWith(k)||k.startsWith(v));
+  if(m)return VERBS[m];
+  const ends=v.endsWith('s')||v.endsWith('sh')||v.endsWith('ch')||v.endsWith('x')||v.endsWith('o');
+  const endsY=v.endsWith('y')&&!'aeiou'.includes(v[v.length-2]);
+  return{type:'régulier',forms:{Infinitif:v,'Présent (I/You/We/They)':v,'Présent (He/She/It)':ends?v+'es':endsY?v.slice(0,-1)+'ies':v+'s','Prétérit':v.endsWith('e')?v+'d':endsY?v.slice(0,-1)+'ied':v+'ed','Participe passé':v.endsWith('e')?v+'d':endsY?v.slice(0,-1)+'ied':v+'ed','Présent continu':'am/is/are '+v+'ing','Futur':'will '+v,'Conditionnel':'would '+v,'Present Perfect':'have/has '+(v.endsWith('e')?v+'d':endsY?v.slice(0,-1)+'ied':v+'ed'),'Impératif':v}};
+}
+
+$('#conj-btn').addEventListener('click',()=>{
+  const v=$('#conj-input').value.trim();if(!v)return;
+  const r=conjugateVerb(v);
+  $('#conj-result').innerHTML='<div style="margin-bottom:12px;color:var(--text-secondary);font-size:.85rem">Verbe '+r.type+'</div>'+Object.entries(r.forms).map(([t,f])=>'<div class="conj-row"><span class="conj-tense">'+t+'</span><span class="conj-form">'+f+'</span></div>').join('');
+});
+$('#conj-input').addEventListener('keydown',e=>{if(e.key==='Enter')$('#conj-btn').click()});
+
+$('#trans-btn').addEventListener('click',async()=>{
+  const t=$('#trans-input').value.trim(),d=$('#trans-dir').value;if(!t)return;
+  const l=$('#trans-loader'),r=$('#trans-result');l.style.display='flex';r.style.display='none';
+  try{
+    const q=d==='fr-en'?'fr|en':'en|fr';
+    const resp=await fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(t)+'&langpair='+q);
+    if(!resp.ok)throw Error();
+    const data=await resp.json();
+    r.textContent=data.responseData.translatedText;r.style.display='block';
+  }catch{r.textContent='[Traduction momentanément indisponible]';r.style.display='block'}
+  finally{l.style.display='none'}
+});
+
+const PT={focus:1500,break:300,long:900},CIRC=2*Math.PI*90;
+function updatePom(){const t=state.pomodoro.time;$('#pomodoro-time').textContent=String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');const p=1-(t/PT[state.pomodoro.phase]);const ring=$('#pomodoro-ring');ring.style.strokeDasharray=CIRC;ring.style.strokeDashoffset=CIRC*(1-p);$('#pomodoro-phase').textContent={focus:'Focus',break:'Pause courte',long:'Pause longue'}[state.pomodoro.phase];}
+function pomTick(){if(state.pomodoro.paused||!state.pomodoro.running)return;state.pomodoro.time--;updatePom();if(state.pomodoro.time<=0){clearInterval(state.pomodoro.interval);state.pomodoro.running=false;if(state.pomodoro.phase==='focus'){state.pomodoro.count++;$('#pomodoro-count').textContent=state.pomodoro.count;state.pomodoro.phase=state.pomodoro.count%4===0?'long':'break'}else{state.pomodoro.phase='focus'}state.pomodoro.time=PT[state.pomodoro.phase];updatePom();$('#pomodoro-start').textContent='Démarrer'}}
+$('#pomodoro-start').addEventListener('click',()=>{if(!state.pomodoro.running){state.pomodoro.running=true;state.pomodoro.paused=false;$('#pomodoro-start').textContent='En cours...';state.pomodoro.interval=setInterval(pomTick,1000)}});
+$('#pomodoro-pause').addEventListener('click',()=>{if(state.pomodoro.running){state.pomodoro.paused=!state.pomodoro.paused;$('#pomodoro-pause').textContent=state.pomodoro.paused?'Reprendre':'Pause'}});
+$('#pomodoro-reset').addEventListener('click',()=>{clearInterval(state.pomodoro.interval);state.pomodoro.running=false;state.pomodoro.paused=false;state.pomodoro.phase='focus';state.pomodoro.time=PT.focus;$('#pomodoro-start').textContent='Démarrer';$('#pomodoro-pause').textContent='Pause';updatePom()});
+updatePom();
+
+const QUESTS=[
+{q:'Que signifie "Hello" ?',opts:['Au revoir','Bonjour','Merci','SVP'],correct:1},{q:'Prétérit de "go" ?',opts:['goed','went','gone','going'],correct:1},{q:'"Merci" en anglais ?',opts:['Please','Sorry','Thank you','Hello'],correct:2},{q:'"She ___ to school."',opts:['go','goes','going','went'],correct:1},{q:'"Beautiful" = ?',opts:['Moche','Beau/Belle','Grand','Petit'],correct:1},{q:'Participe passé de "eat" ?',opts:['ate','eaten','eating','eats'],correct:1},{q:'"Je suis fatigué" = ?',opts:['I am happy','I am tired','I am hungry','I am sick'],correct:1},{q:'"There ___ many people"',opts:['is','are','am','be'],correct:1},{q:'"Quickly" = ?',opts:['Lentement','Rapidement','Fortement','Doucement'],correct:1},{q:'Pluriel de "child" ?',opts:['childs','childes','children','childrens'],correct:2}];
+
+$('#quiz-begin').addEventListener('click',startQuiz);
+$('#quiz-retry').addEventListener('click',startQuiz);
+
+function startQuiz(){
+  state.quiz.questions=[...QUESTS].sort(()=>Math.random()-.5).slice(0,5);
+  state.quiz.current=0;state.quiz.score=0;state.quiz.answered=false;
+  $('#quiz-start').style.display='none';$('#quiz-result').style.display='none';$('#quiz-playing').style.display='block';
+  showQ();
+}
+
+function showQ(){
+  if(state.quiz.current>=state.quiz.questions.length){showResult();return}
+  const q=state.quiz.questions[state.quiz.current];state.quiz.answered=false;
+  $('#quiz-progress').textContent='Question '+(state.quiz.current+1)+'/'+state.quiz.questions.length;
+  $('#quiz-question').textContent=q.q;
+  $('#quiz-options').innerHTML=q.opts.map((o,i)=>'<button class="quiz-option" data-index="'+i+'">'+o+'</button>').join('');
+  $$('.quiz-option').forEach(b=>b.addEventListener('click',()=>{if(state.quiz.answered)return;state.quiz.answered=true;const idx=parseInt(b.dataset.index),correct=idx===q.correct;if(correct)state.quiz.score++;b.classList.add(correct?'correct':'wrong');if(!correct)$$('.quiz-option')[q.correct].classList.add('correct');$$('.quiz-option').forEach(x=>x.style.pointerEvents='none');setTimeout(()=>{state.quiz.current++;showQ()},1000)}));
+}
+
+function showResult(){
+  $('#quiz-playing').style.display='none';$('#quiz-result').style.display='block';
+  const s=state.quiz.score;
+  $('#quiz-score').innerHTML='<span class="score-num">'+s+'/'+state.quiz.questions.length+'</span><br><span style="font-size:1rem;color:var(--text-secondary)">'+(s===state.quiz.questions.length?'Parfait ! Vous êtes un expert !':s>=3?'Bon travail ! Continuez !':'Continuez à apprendre !')+'</span>';
+}
+
+$$('.donate-btn').forEach(b=>b.addEventListener('click',()=>{$$('.donate-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');state.donateAmount=parseInt(b.dataset.amount);$('#donate-custom').value='';$('#donate-amount-display').textContent=state.donateAmount+' €'}));
+$('#donate-custom').addEventListener('input',function(){const v=parseInt(this.value);if(v&&v>0){state.donateAmount=v;$$('.donate-btn').forEach(b=>b.classList.remove('active'));$('#donate-amount-display').textContent=v+' €'}});
+$('#donate-btn').addEventListener('click',()=>{$('#donate-thanks').style.display='block';$('#donate-thanks').scrollIntoView({behavior:'smooth'});const p=Math.min(3247+state.donateAmount,5000)/5000*100;$('#donate-raised').textContent=Math.min(3247+state.donateAmount,5000).toLocaleString()+' €';$('#donate-fill').style.width=p+'%';$('#donate-percent').textContent=Math.round(p)+'%'});
+
+function animateDonateBar(){const b=$('#donate-fill');const w=b.style.width||'65%';b.style.width='0%';setTimeout(()=>b.style.width=w,100)}
+
+$$('.tab-btn').forEach(b=>b.addEventListener('click',()=>{$$('.tab-btn').forEach(x=>x.classList.remove('active'));$$('.tab-content').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('#tab-'+b.dataset.tab).classList.add('active')}));
+
+const initHash=location.hash.slice(1)||'home';
+navigate(initHash);
+renderBlog();
+if(initHash==='home')startCounters();
+})();
+</script>
+</body>
+</html>
