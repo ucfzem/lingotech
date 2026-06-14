@@ -186,6 +186,38 @@ select.form-input{cursor:pointer}
 .footer-bottom p{color:var(--text-secondary);font-size:.85rem}
 @media(max-width:768px){.nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:rgba(26,20,16,0.98);flex-direction:column;padding:16px;border-bottom:1px solid var(--border-color)}.nav-links.open{display:flex}.nav-toggle{display:block}.form-grid{grid-template-columns:1fr}.stats{flex-direction:column;align-items:center}.stat-card{width:100%;max-width:280px}.blog-grid{grid-template-columns:1fr}.lesson-vocab{grid-template-columns:1fr}.section-header h2{font-size:1.8rem}}
 @media(max-width:480px){.donate-amounts{flex-direction:column}.footer-content{flex-direction:column}}
+
+/* ===== PATCH: Focus accessible ===== */
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.blog-card:focus-visible,.topic-chip:focus-visible{outline:2px solid var(--accent-gold);outline-offset:2px;border-radius:var(--radius-sm)}
+.form-input:focus{box-shadow:0 0 0 3px var(--accent-gold-dim)}
+/* Donate grid 3 colonnes mobile */
+@media(max-width:480px){.donate-amounts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.donate-amounts .donate-custom{grid-column:1/-1}.donate-btn{min-width:0;flex:none}}
+/* Fade indicator tabs */
+.tabs{position:relative}
+.tabs::after{content:"";position:absolute;top:0;right:0;bottom:0;width:32px;background:linear-gradient(to right,transparent,var(--bg-card));pointer-events:none;border-radius:0 var(--radius-sm) var(--radius-sm) 0}
+.tabs.scrolled-end::after{opacity:0;transition:opacity .2s}
+/* Bouton vérifier pleine largeur */
+.lesson-submit-btn{width:100%;text-align:center}
+/* Animations limitées */
+.hero-badge{animation:pulse 2s ease 3;animation-fill-mode:forwards}
+.donate-heart{animation:heartBeat 1s ease 3;animation-fill-mode:forwards}
+/* Border-left cohérent vocab-item */
+.vocab-item{border-left:3px solid var(--accent-gold);border-radius:0 var(--radius-sm) var(--radius-sm) 0}
+/* Badge Terminé leçons */
+.blog-card{position:relative}
+.blog-card.lesson-completed::before{content:"✓ Terminé";position:absolute;top:16px;right:16px;background:var(--accent-yellow-dim);color:var(--accent-yellow);font-size:.75rem;font-weight:700;padding:4px 10px;border-radius:50px;border:1px solid var(--accent-yellow)}
+/* Bouton retour en haut */
+#back-to-top{position:fixed;bottom:24px;right:24px;width:48px;height:48px;border-radius:50%;background:var(--gradient-1);color:#1a1410;border:none;font-size:1.3rem;font-weight:800;cursor:pointer;box-shadow:var(--shadow);display:none;align-items:center;justify-content:center;z-index:999;transition:transform .2s,opacity .2s}
+#back-to-top.visible{display:flex}
+#back-to-top:hover{transform:translateY(-3px)}
+/* Badge fallback assistant */
+.chat-msg.bot .fallback-tag{display:inline-block;padding:2px 10px;border-radius:12px;font-size:.7rem;background:rgba(245,235,220,0.08);color:var(--text-secondary);margin-bottom:6px;margin-left:6px;font-weight:600}
+/* Loader don */
+.donate-loader{display:none;align-items:center;gap:12px;margin-top:16px;padding:16px;background:var(--bg-primary);border-radius:var(--radius-sm)}
+.donate-loader.active{display:flex}
+.donate-loader p{color:var(--text-secondary);font-size:.9rem}
+/* Pomodoro bouton désactivé */
+#pomodoro-start:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 </style>
 <meta name="theme-color" content="#1a1410" />
 </head>
@@ -702,7 +734,87 @@ const initHash=location.hash.slice(1)||'home';
 navigate(initHash);
 renderBlog();
 if(initHash==='home')startCounters();
+
+// ===== PATCH: Retour en haut =====
+const backToTop=document.getElementById('back-to-top');
+if(backToTop){
+  window.addEventListener('scroll',()=>{backToTop.classList.toggle('visible',window.scrollY>400)});
+  backToTop.addEventListener('click',()=>{window.scrollTo({top:0,behavior:'smooth'})});
+}
+
+// ===== PATCH: Fade indicator tabs =====
+const tabsEl=document.querySelector('.tabs');
+if(tabsEl){
+  function checkTabsScroll(){const atEnd=tabsEl.scrollLeft+tabsEl.clientWidth>=tabsEl.scrollWidth-2;tabsEl.classList.toggle('scrolled-end',atEnd)}
+  tabsEl.addEventListener('scroll',checkTabsScroll);window.addEventListener('resize',checkTabsScroll);checkTabsScroll();
+}
+
+// ===== PATCH: Badge Terminé leçons =====
+window.completedLessons=window.completedLessons||new Set();
+function markLessonCompleted(lessonId){window.completedLessons.add(lessonId);const card=document.querySelector('.blog-card[data-lesson="'+lessonId+'"]');if(card)card.classList.add('lesson-completed')}
+document.addEventListener('click',(e)=>{
+  if(e.target.classList.contains('lesson-submit-btn')){
+    setTimeout(()=>{
+      const scoreDisplay=document.querySelector('.quiz-score-display');if(!scoreDisplay)return;
+      const text=scoreDisplay.textContent||'',match=text.match(/(\d+)\/(\d+)/);
+      if(match&&match[1]===match[2]){
+        const titleEl=document.querySelector('#lesson-content h2');
+        if(titleEl)document.querySelectorAll('.blog-card').forEach(card=>{const ct=card.querySelector('h3');if(ct&&ct.textContent.trim()===titleEl.textContent.trim())markLessonCompleted(card.dataset.lesson)})
+      }
+    },50)
+  }
+});
+
+// ===== PATCH: Badge fallback assistant =====
+const fallbackTexts=new Set();
+try{['general','sport','technology','health','arts','cinema','stars','vacances','hobbies','travel','religion','history'].forEach(id=>fallbackTexts.add(templateFallback(id)))}catch(e){}
+const chatContainer=document.getElementById('assistant-chat');
+if(chatContainer){
+  const observer=new MutationObserver(mutations=>{
+    mutations.forEach(m=>{
+      m.addedNodes.forEach(node=>{
+        if(node.nodeType===1&&node.classList.contains('bot')){
+          const rawText=node.innerHTML.replace(/<span class="topic-tag">.*?<\/span>/,'').trim();
+          if(fallbackTexts.has(rawText)){
+            const tag=document.createElement('span');tag.className='fallback-tag';tag.textContent='Réponse pré-écrite';
+            const topicTag=node.querySelector('.topic-tag');if(topicTag)topicTag.insertAdjacentElement('afterend',tag)
+          }
+        }
+      })
+    })
+  });
+  observer.observe(chatContainer,{childList:true})
+}
+
+// ===== PATCH: Loader simulé don =====
+const donateBtn=document.getElementById('donate-btn'),donateThanks=document.getElementById('donate-thanks');
+if(donateBtn&&donateThanks){
+  let donateLoader=document.getElementById('donate-loader');
+  if(!donateLoader){
+    donateLoader=document.createElement('div');donateLoader.id='donate-loader';donateLoader.className='donate-loader';
+    donateLoader.innerHTML='<div class="spinner"></div><p>Traitement de votre don...</p>';
+    donateThanks.insertAdjacentElement('beforebegin',donateLoader)
+  }
+  donateBtn.addEventListener('click',function interceptDonate(e){
+    if(donateThanks.style.display==='block')return;
+    e.stopPropagation();e.preventDefault();
+    donateLoader.classList.add('active');donateBtn.disabled=true;
+    setTimeout(()=>{
+      donateLoader.classList.remove('active');donateBtn.disabled=false;
+      donateBtn.removeEventListener('click',interceptDonate);donateBtn.click();
+      donateBtn.addEventListener('click',interceptDonate)
+    },900)
+  },{capture:true})
+}
+
+// ===== PATCH: Pomodoro bouton désactivé =====
+const pomodoroStart=document.getElementById('pomodoro-start'),pomodoroReset=document.getElementById('pomodoro-reset');
+if(pomodoroStart&&pomodoroReset){
+  pomodoroStart.addEventListener('click',()=>{setTimeout(()=>{pomodoroStart.disabled=true},0)});
+  pomodoroReset.addEventListener('click',()=>{pomodoroStart.disabled=false})
+}
 })();
 </script>
+<button id="back-to-top" aria-label="Retour en haut">↑</button>
 </body>
 </html>
