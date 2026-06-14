@@ -200,7 +200,7 @@ select.form-input{cursor:pointer}
 <a href="#tools" class="nav-link">Outils</a>
 <a href="#donate" class="nav-link">Dons</a>
 </div>
-<button class="nav-toggle" aria-label="Menu">&#9776;</button>
+<button class="nav-toggle" aria-label="Menu" aria-expanded="false">&#9776;</button>
 </div></nav>
 
 <section id="home" class="section active">
@@ -308,11 +308,11 @@ select.form-input{cursor:pointer}
 <div class="footer-content">
 <div class="footer-brand"><h3>Lingotech</h3><p>Plateforme éducative interactive propulsée par l'IA.</p></div>
 <div class="footer-links"><h4>Navigation</h4>
-<a data-nav="home">Accueil</a>
-<a data-nav="cover-letter">Lettre de motivation</a>
-<a data-nav="blog">Blog anglais</a>
-<a data-nav="tools">Outils</a>
-<a data-nav="donate">Dons</a>
+<a href="#" data-nav="home">Accueil</a>
+<a href="#" data-nav="cover-letter">Lettre de motivation</a>
+<a href="#" data-nav="blog">Blog anglais</a>
+<a href="#" data-nav="tools">Outils</a>
+<a href="#" data-nav="donate">Dons</a>
 </div>
 </div>
 <div class="footer-bottom"><p>&copy; 2026 Lingotech. Tous droits réservés.</p></div>
@@ -346,7 +346,7 @@ function startCounters(){
 
 document.querySelectorAll('[data-nav]').forEach(l=>l.addEventListener('click',e=>{e.preventDefault();const id=l.dataset.nav;navigate(id);history.replaceState(null,'','#'+id);}));
 $$('.nav-link').forEach(l=>l.addEventListener('click',e=>{e.preventDefault();$('.nav-links').classList.remove('open');const id=l.getAttribute('href').slice(1);navigate(id);history.replaceState(null,'','#'+id);}));
-$('.nav-toggle').addEventListener('click',()=>{$('.nav-links').classList.toggle('open');});
+$('.nav-toggle').addEventListener('click',()=>{const n=$('.nav-links');const open=n.classList.toggle('open');$('.nav-toggle').setAttribute('aria-expanded',open);});
 window.addEventListener('hashchange',()=>{const id=location.hash.slice(1)||'home';navigate(id);});
 
 $('#cl-generate').addEventListener('click',async()=>{
@@ -405,6 +405,7 @@ function checkLessonQuiz(id){
     const sel=item.querySelector('input[type="radio"]:checked');
     item.querySelectorAll('label').forEach((lb,oi)=>{
       lb.classList.remove('correct','wrong');
+      lb.style.pointerEvents='none';
       if(oi===l.questions[qi].correct)lb.classList.add('correct');
       if(sel&&parseInt(sel.value)===oi&&oi!==l.questions[qi].correct)lb.classList.add('wrong');
     });
@@ -425,7 +426,7 @@ const VERBS={be:{type:'irrégulier',forms:{Infinitif:'be','Présent (I)':'am','P
 function conjugateVerb(v){
   v=v.toLowerCase().trim();
   if(VERBS[v])return VERBS[v];
-  const m=Object.keys(VERBS).find(k=>v.startsWith(k)||k.startsWith(v));
+  const m=Object.keys(VERBS).find(k=>v===k);
   if(m)return VERBS[m];
   const ends=v.endsWith('s')||v.endsWith('sh')||v.endsWith('ch')||v.endsWith('x')||v.endsWith('o');
   const endsY=v.endsWith('y')&&!'aeiou'.includes(v[v.length-2]);
