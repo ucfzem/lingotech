@@ -119,6 +119,20 @@ select.form-input{cursor:pointer}
 .trans-loader{display:none;align-items:center;gap:12px;margin-top:16px;padding:16px;background:var(--bg-primary);border-radius:var(--radius-sm)}
 .trans-loader p{color:var(--text-secondary);font-size:.9rem}
 .trans-result{margin-top:16px;padding:20px;background:var(--bg-primary);border-radius:var(--radius-sm);border:1px solid var(--border-color);white-space:pre-wrap;line-height:1.7;display:none}
+.assistant-topics{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.topic-chip{padding:8px 16px;border-radius:50px;border:1px solid var(--border-color);background:var(--bg-primary);color:var(--text-secondary);font-size:.85rem;cursor:pointer;transition:all .3s;font-family:inherit;display:flex;align-items:center;gap:6px}
+.topic-chip:hover{border-color:var(--accent-gold);color:var(--text-primary)}
+.topic-chip.active{background:var(--accent-gold-dim);border-color:var(--accent-gold);color:var(--accent-gold)}
+.assistant-input-row{display:flex;gap:12px;margin-bottom:16px}
+.assistant-input-row textarea{flex:1;resize:vertical;min-height:80px}
+.assistant-input-row .btn{flex-shrink:0;align-self:flex-end}
+.assistant-loader{display:none;align-items:center;gap:12px;margin-top:16px;padding:16px;background:var(--bg-primary);border-radius:var(--radius-sm)}
+.assistant-loader p{color:var(--text-secondary);font-size:.9rem}
+.assistant-chat{display:flex;flex-direction:column;gap:16px;margin-top:16px;max-height:400px;overflow-y:auto;padding:4px}
+.chat-msg{padding:14px 18px;border-radius:var(--radius-sm);max-width:85%;line-height:1.6;font-size:.95rem;animation:fadeIn .3s ease}
+.chat-msg.user{background:var(--accent-gold-dim);border:1px solid var(--accent-gold);align-self:flex-end;color:var(--text-primary)}
+.chat-msg.bot{background:var(--bg-card);border:1px solid var(--border-color);align-self:flex-start;color:var(--text-primary)}
+.chat-msg .topic-tag{display:inline-block;padding:2px 10px;border-radius:12px;font-size:.7rem;background:var(--accent-yellow-dim);color:var(--accent-yellow);margin-bottom:6px;font-weight:600}
 .pomodoro-card{text-align:center}
 .pomodoro-display{position:relative;width:220px;height:220px;margin:0 auto 24px}
 .pomodoro-ring{transform:rotate(-90deg);width:100%;height:100%}
@@ -251,17 +265,19 @@ select.form-input{cursor:pointer}
 
 <section id="tools" class="section">
 <div class="container">
-<div class="section-header"><span class="section-badge">Outils interactifs</span><h2>Boîte à outils</h2><p>4 outils puissants pour maîtriser l'anglais au quotidien.</p></div>
+<div class="section-header"><span class="section-badge">Outils interactifs</span><h2>Boîte à outils</h2><p>5 outils puissants pour maîtriser l'anglais au quotidien.</p></div>
 <div class="tabs">
 <button class="tab-btn active" data-tab="conjugator">Conjugateur</button>
 <button class="tab-btn" data-tab="translator">Traducteur IA</button>
 <button class="tab-btn" data-tab="pomodoro">Pomodoro</button>
 <button class="tab-btn" data-tab="quiz">Quiz rapide</button>
+<button class="tab-btn" data-tab="assistant">Assistant IA</button>
 </div>
 <div class="tab-content active" id="tab-conjugator"><div class="tool-card"><h3>Conjugaison Anglais</h3><p>Conjuguez n'importe quel verbe anglais à tous les temps.</p><div class="conj-controls"><input type="text" id="conj-input" placeholder="Entrez un verbe (ex: speak, go, eat)" class="form-input"><button id="conj-btn" class="btn btn-primary">Conjuguer</button></div><div id="conj-result" class="conj-result"></div></div></div>
 <div class="tab-content" id="tab-translator"><div class="tool-card"><h3>Traducteur IA <span id="trans-title">Français → Anglais</span></h3><p>Traduction contextuelle de qualité professionnelle.</p><div class="trans-controls"><div class="trans-lang-row"><select id="trans-from" class="form-input trans-select"><option value="fr">🇫🇷 FR</option><option value="en">🇬🇧 EN</option><option value="es">🇪🇸 ES</option><option value="nl">🇳🇱 NL</option><option value="ar">🇲🇦 AR</option></select><span class="trans-arrow">→</span><select id="trans-to" class="form-input trans-select"><option value="en">🇬🇧 EN</option><option value="fr">🇫🇷 FR</option><option value="es">🇪🇸 ES</option><option value="nl">🇳🇱 NL</option><option value="ar">🇲🇦 AR</option></select></div><textarea id="trans-input" class="form-input trans-input" placeholder="Texte à traduire..." rows="4"></textarea><button id="trans-btn" class="btn btn-primary">Traduire</button></div><div class="trans-loader" id="trans-loader"><div class="spinner"></div><p>Traduction en cours...</p></div><div id="trans-result" class="trans-result"></div></div></div>
 <div class="tab-content" id="tab-pomodoro"><div class="tool-card pomodoro-card"><h3>Timer Pomodoro</h3><div class="pomodoro-display"><svg class="pomodoro-ring" viewBox="0 0 200 200"><circle cx="100" cy="100" r="90" class="ring-bg"/><circle cx="100" cy="100" r="90" class="ring-progress" id="pomodoro-ring"/></svg><div class="pomodoro-time" id="pomodoro-time">25:00</div></div><div class="pomodoro-phase" id="pomodoro-phase">Focus</div><div class="pomodoro-controls"><button id="pomodoro-start" class="btn btn-primary">Démarrer</button><button id="pomodoro-pause" class="btn btn-secondary">Pause</button><button id="pomodoro-reset" class="btn btn-secondary">Reset</button></div><div class="pomodoro-sessions">Sessions complétées : <strong id="pomodoro-count">0</strong></div></div></div>
 <div class="tab-content" id="tab-quiz"><div class="tool-card"><h3>Quiz Rapide d'Anglais</h3><p>Testez vos connaissances avec 5 questions aléatoires.</p><div id="quiz-area"><div id="quiz-start"><button id="quiz-begin" class="btn btn-primary">Commencer le quiz</button></div><div id="quiz-playing" style="display:none"><div class="quiz-progress" id="quiz-progress">Question 1/5</div><div class="quiz-question" id="quiz-question"></div><div class="quiz-options" id="quiz-options"></div></div><div id="quiz-result" style="display:none"><div class="quiz-score" id="quiz-score"></div><button id="quiz-retry" class="btn btn-primary">Rejouer</button></div></div></div></div>
+<div class="tab-content" id="tab-assistant"><div class="tool-card"><h3>🤖 Assistant IA Multithème</h3><p>Posez vos questions sur n'importe quel sujet. Choisissez un thème pour contextualiser votre question.</p><div class="assistant-topics" id="assistant-topics"></div><div class="assistant-input-row"><textarea id="assistant-input" class="form-input" placeholder="Posez votre question..." rows="3"></textarea><button id="assistant-btn" class="btn btn-primary">Demander</button></div><div class="assistant-loader" id="assistant-loader"><div class="spinner"></div><p>Réflexion en cours...</p></div><div id="assistant-chat" class="assistant-chat"></div></div></div>
 </div>
 </section>
 
@@ -489,6 +505,81 @@ $('#donate-btn').addEventListener('click',()=>{$('#donate-thanks').style.display
 function animateDonateBar(){const b=$('#donate-fill');const w=b.style.width||'65%';b.style.width='0%';setTimeout(()=>b.style.width=w,100)}
 
 $$('.tab-btn').forEach(b=>b.addEventListener('click',()=>{$$('.tab-btn').forEach(x=>x.classList.remove('active'));$$('.tab-content').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('#tab-'+b.dataset.tab).classList.add('active')}));
+
+// === Assistant IA ===
+const TOPICS=[
+  {id:'general',label:'💬 Général'},
+  {id:'sport',label:'🏅 Sport'},
+  {id:'technology',label:'💻 Technologie'},
+  {id:'health',label:'❤️ Santé'},
+  {id:'arts',label:'🎨 Arts'},
+  {id:'cinema',label:'🎬 Cinéma'},
+  {id:'stars',label:'⭐ Stars'},
+  {id:'vacances',label:'🏖️ Vacances'},
+  {id:'hobbies',label:'🎯 Hobbies'},
+  {id:'travel',label:'✈️ Voyage'},
+  {id:'religion',label:'🕌 Religion'},
+  {id:'history',label:'📖 Histoire'}
+];
+let assistantTopic='general';
+
+function renderTopics(){
+  const c=$('#assistant-topics');
+  c.innerHTML=TOPICS.map(t=>`<button class="topic-chip${t.id===assistantTopic?' active':''}" data-topic="${t.id}">${t.label}</button>`).join('');
+  c.querySelectorAll('.topic-chip').forEach(b=>b.addEventListener('click',()=>{
+    c.querySelectorAll('.topic-chip').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    assistantTopic=b.dataset.topic;
+  }));
+}
+renderTopics();
+
+$('#assistant-btn').addEventListener('click',async()=>{
+  const q=$('#assistant-input').value.trim();if(!q)return;
+  const chat=$('#assistant-chat'),loader=$('#assistant-loader');
+  const topic=TOPICS.find(t=>t.id===assistantTopic)||TOPICS[0];
+  const userDiv=document.createElement('div');
+  userDiv.className='chat-msg user';
+  userDiv.textContent=q;
+  chat.appendChild(userDiv);
+  $('#assistant-input').value='';
+  loader.style.display='flex';
+  try{
+    const resp=await fetch('https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({inputs:'<|system|>\nYou are a helpful AI assistant. The user is asking about: '+topic.label.replace(/[^\w\s]/g,'')+'. Answer in French, be concise and informative.</s>\n<|user|>\n'+q+'</s>\n<|assistant|>\n',parameters:{max_new_tokens:500,temperature:0.7}})
+    });
+    if(!resp.ok)throw Error();
+    const d=await resp.json();
+    if(d.error)throw Error();
+    const t=Array.isArray(d)?d[0].generated_text:d.generated_text;
+    const m=t.match(/<\|assistant\|>\n([\s\S]*)$/);
+    const answer=m?m[1].trim():t.trim();
+    const botDiv=document.createElement('div');
+    botDiv.className='chat-msg bot';
+    botDiv.innerHTML='<span class="topic-tag">'+topic.label+'</span>'+answer;
+    chat.appendChild(botDiv);
+  }catch{
+    const fallbacks={general:'Je suis désolé, je rencontre des difficultés techniques. Réessayez dans un instant.',sport:'Le sport est vaste ! Pouvez-vous préciser votre question (un sport, un athlète, une compétition) ?',technology:'La technologie évolue rapidement. Posez-moi une question précise sur un sujet tech.',health:'Pour toute question de santé, consultez un professionnel de santé. Je peux vous donner des informations générales.',arts:'L\'art est un monde infini ! Demandez-moi sur un mouvement, un artiste ou une œuvre.',cinema:'Le cinéma me passionne ! Posez votre question sur un film, un réalisateur ou un acteur.',stars:'Parlez-moi de vos célébrités préférées, je vous dirai tout ce que je sais.',vacances:'Les vacances, quel plaisir ! Où rêvez-vous d\'aller ?',hobbies:'Les hobbies rendent la vie belle. Que voulez-vous savoir ?',travel:'Le voyage est une aventure ! Quelle destination vous intéresse ?',religion:'Les religions sont nombreuses et riches. Sur laquelle voulez-vous en savoir plus ?',history:'L\'histoire est fascinante ! Quelle période ou événement vous intéresse ?'};
+    const botDiv=document.createElement('div');
+    botDiv.className='chat-msg bot';
+    botDiv.innerHTML='<span class="topic-tag">'+topic.label+'</span>'+(fallbacks[assistantTopic]||fallbacks.general);
+    chat.appendChild(botDiv);
+  }finally{
+    loader.style.display='none';
+    chat.scrollTop=chat.scrollHeight;
+  }
+});
+$('#assistant-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('#assistant-btn').click()}});
+
+// URL tab detection (from index.html links)
+const urlParams=new URLSearchParams(location.search);
+const tabParam=urlParams.get('tab');
+if(tabParam){
+  const tabBtn=document.querySelector(`.tab-btn[data-tab="${tabParam}"]`);
+  if(tabBtn){navigate('tools');tabBtn.click()}
+}
 
 const initHash=location.hash.slice(1)||'home';
 navigate(initHash);

@@ -55,6 +55,13 @@ h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;line-height:1.15;margin-bott
 @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .enter-section p{color:var(--text-secondary);font-size:.9rem;margin-bottom:16px}
 .thanks-note{font-size:.8rem;color:var(--text-secondary);margin-top:8px;opacity:.7}
+.tools-showcase{display:flex;flex-direction:column;gap:10px}
+.tool-card-sm{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-sm);text-decoration:none;color:var(--text-primary);transition:all .3s;cursor:pointer}
+.tool-card-sm:hover{transform:translateY(-2px);border-color:var(--accent-gold);background:var(--bg-card-hover)}
+.tool-icon{font-size:1.4rem;flex-shrink:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--bg-primary);border-radius:10px;border:1px solid var(--border-color)}
+.tool-card-sm:hover .tool-icon{border-color:var(--accent-gold)}
+.tool-name{font-size:.95rem;font-weight:600}
+.tool-desc{font-size:.8rem;color:var(--text-secondary);display:block}
 @media(max-width:600px){.form-card{padding:24px}.features{gap:10px}.feature-chip{font-size:.8rem;padding:6px 12px}}
 </style>
 </head>
@@ -67,7 +74,7 @@ h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;line-height:1.15;margin-bott
     <div class="logo">Lingotech</div>
     <div class="divider"></div>
     <h1>Maîtrisez l'anglais<br>avec <span class="gradient-text">l'intelligence artificielle</span></h1>
-    <p class="subtitle">Leçons interactives, conjugateur, traducteur IA et générateur de lettres — le tout dans une seule plateforme.</p>
+    <p class="subtitle">Leçons interactives, conjugateur, traducteur IA, assistant multithème et générateur de lettres — le tout dans une seule plateforme.</p>
 
     <div class="features">
       <span class="feature-chip"><span class="icon">📚</span> 6 leçons interactives</span>
@@ -115,6 +122,28 @@ h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;line-height:1.15;margin-bott
         <a href="https://www.instagram.com/ucfzem" target="_blank" rel="noopener" class="social-btn instagram">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
           Instagram
+        </a>
+      </div>
+    </div>
+
+    <!-- Featured Tools -->
+    <div style="margin-top:40px;width:100%;max-width:600px">
+      <p style="font-size:.85rem;color:var(--text-secondary);margin-bottom:16px;font-weight:600;letter-spacing:.5px">ACCÉDEZ AUX OUTILS</p>
+      <div class="tools-showcase">
+        <a href="app.html?tab=conjugator" class="tool-card-sm">
+          <span class="tool-icon">🔤</span>
+          <span class="tool-name">Conjugateur IA</span>
+          <span class="tool-desc">Conjuguez tous les verbes anglais</span>
+        </a>
+        <a href="app.html?tab=translator" class="tool-card-sm">
+          <span class="tool-icon">🌍</span>
+          <span class="tool-name">Traducteur IA</span>
+          <span class="tool-desc">5 langues avec drapeaux</span>
+        </a>
+        <a href="app.html?tab=assistant" class="tool-card-sm">
+          <span class="tool-icon">🤖</span>
+          <span class="tool-name">Assistant IA</span>
+          <span class="tool-desc">12 thèmes : sport, tech, cinéma…</span>
         </a>
       </div>
     </div>
