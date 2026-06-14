@@ -112,8 +112,8 @@ select.form-input{cursor:pointer}
 .tool-card{background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border-color);padding:36px}
 .tool-card h3{font-size:1.5rem;margin-bottom:8px}
 .tool-card>p{color:var(--text-secondary);margin-bottom:24px}
-.conj-controls{display:flex;gap:12px;margin-bottom:24px}
-.conj-controls .form-input{flex:1}
+.conj-controls{display:flex;gap:12px;margin-bottom:24px;width:100%;box-sizing:border-box;flex-wrap:wrap}
+.conj-controls .form-input{flex:1;min-width:0}
 .conj-result{display:grid;gap:8px}
 .conj-row{display:grid;grid-template-columns:140px 1fr;padding:10px 16px;background:var(--bg-primary);border-radius:var(--radius-sm);align-items:center}
 .conj-tense{font-weight:600;font-size:.85rem;color:var(--accent-gold)}
@@ -193,6 +193,7 @@ select.form-input{cursor:pointer}
 .footer-bottom{text-align:center;padding-top:24px;border-top:1px solid var(--border-color)}
 .footer-bottom p{color:var(--text-secondary);font-size:.85rem}
 @media(max-width:768px){.nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:rgba(26,20,16,0.98);flex-direction:column;padding:16px;border-bottom:1px solid var(--border-color)}.nav-links.open{display:flex}.nav-toggle{display:block}.form-grid{grid-template-columns:1fr}.stats{flex-direction:column;align-items:center}.stat-card{width:100%;max-width:280px}.blog-grid{grid-template-columns:1fr}.lesson-vocab{grid-template-columns:1fr}.section-header h2{font-size:1.8rem}}
+@media(max-width:640px){.conj-controls{flex-direction:column}}
 @media(max-width:480px){.donate-amounts{flex-direction:column}.footer-content{flex-direction:column}}
 
 /* ===== PATCH: Focus accessible ===== */
