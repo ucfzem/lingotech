@@ -111,6 +111,8 @@ select.form-input{cursor:pointer}
 .conj-row{display:grid;grid-template-columns:140px 1fr;padding:10px 16px;background:var(--bg-primary);border-radius:var(--radius-sm);align-items:center}
 .conj-tense{font-weight:600;font-size:.85rem;color:var(--accent-gold)}
 .conj-form{color:var(--text-primary)}
+.trans-lang-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.trans-arrow{font-size:1.5rem;color:var(--accent-gold);font-weight:700}
 .trans-controls{display:flex;flex-direction:column;gap:12px}
 .trans-select{max-width:250px}
 .trans-input{resize:vertical;min-height:120px}
@@ -257,7 +259,7 @@ select.form-input{cursor:pointer}
 <button class="tab-btn" data-tab="quiz">Quiz rapide</button>
 </div>
 <div class="tab-content active" id="tab-conjugator"><div class="tool-card"><h3>Conjugaison Anglais</h3><p>Conjuguez n'importe quel verbe anglais à tous les temps.</p><div class="conj-controls"><input type="text" id="conj-input" placeholder="Entrez un verbe (ex: speak, go, eat)" class="form-input"><button id="conj-btn" class="btn btn-primary">Conjuguer</button></div><div id="conj-result" class="conj-result"></div></div></div>
-<div class="tab-content" id="tab-translator"><div class="tool-card"><h3>Traducteur IA Français ↔ Anglais</h3><p>Traduction contextuelle de qualité professionnelle.</p><div class="trans-controls"><select id="trans-dir" class="form-input trans-select"><option value="fr-en">Français → Anglais</option><option value="en-fr">Anglais → Français</option></select><textarea id="trans-input" class="form-input trans-input" placeholder="Texte à traduire..." rows="4"></textarea><button id="trans-btn" class="btn btn-primary">Traduire</button></div><div class="trans-loader" id="trans-loader"><div class="spinner"></div><p>Traduction en cours...</p></div><div id="trans-result" class="trans-result"></div></div></div>
+<div class="tab-content" id="tab-translator"><div class="tool-card"><h3>Traducteur IA <span id="trans-title">Français → Anglais</span></h3><p>Traduction contextuelle de qualité professionnelle.</p><div class="trans-controls"><div class="trans-lang-row"><select id="trans-from" class="form-input trans-select"><option value="fr">🇫🇷 FR</option><option value="en">🇬🇧 EN</option><option value="es">🇪🇸 ES</option><option value="nl">🇳🇱 NL</option><option value="ar">🇲🇦 AR</option></select><span class="trans-arrow">→</span><select id="trans-to" class="form-input trans-select"><option value="en">🇬🇧 EN</option><option value="fr">🇫🇷 FR</option><option value="es">🇪🇸 ES</option><option value="nl">🇳🇱 NL</option><option value="ar">🇲🇦 AR</option></select></div><textarea id="trans-input" class="form-input trans-input" placeholder="Texte à traduire..." rows="4"></textarea><button id="trans-btn" class="btn btn-primary">Traduire</button></div><div class="trans-loader" id="trans-loader"><div class="spinner"></div><p>Traduction en cours...</p></div><div id="trans-result" class="trans-result"></div></div></div>
 <div class="tab-content" id="tab-pomodoro"><div class="tool-card pomodoro-card"><h3>Timer Pomodoro</h3><div class="pomodoro-display"><svg class="pomodoro-ring" viewBox="0 0 200 200"><circle cx="100" cy="100" r="90" class="ring-bg"/><circle cx="100" cy="100" r="90" class="ring-progress" id="pomodoro-ring"/></svg><div class="pomodoro-time" id="pomodoro-time">25:00</div></div><div class="pomodoro-phase" id="pomodoro-phase">Focus</div><div class="pomodoro-controls"><button id="pomodoro-start" class="btn btn-primary">Démarrer</button><button id="pomodoro-pause" class="btn btn-secondary">Pause</button><button id="pomodoro-reset" class="btn btn-secondary">Reset</button></div><div class="pomodoro-sessions">Sessions complétées : <strong id="pomodoro-count">0</strong></div></div></div>
 <div class="tab-content" id="tab-quiz"><div class="tool-card"><h3>Quiz Rapide d'Anglais</h3><p>Testez vos connaissances avec 5 questions aléatoires.</p><div id="quiz-area"><div id="quiz-start"><button id="quiz-begin" class="btn btn-primary">Commencer le quiz</button></div><div id="quiz-playing" style="display:none"><div class="quiz-progress" id="quiz-progress">Question 1/5</div><div class="quiz-question" id="quiz-question"></div><div class="quiz-options" id="quiz-options"></div></div><div id="quiz-result" style="display:none"><div class="quiz-score" id="quiz-score"></div><button id="quiz-retry" class="btn btn-primary">Rejouer</button></div></div></div></div>
 </div>
@@ -421,11 +423,21 @@ $('#conj-btn').addEventListener('click',()=>{
 });
 $('#conj-input').addEventListener('keydown',e=>{if(e.key==='Enter')$('#conj-btn').click()});
 
+const LANG_NAMES={fr:'Français',en:'Anglais',es:'Espagnol',nl:'Néerlandais',ar:'Arabe'};
+function updateTransTitle(){
+  const from=$('#trans-from').value,to=$('#trans-to').value;
+  $('#trans-title').textContent=LANG_NAMES[from]+' → '+LANG_NAMES[to];
+}
+$('#trans-from').addEventListener('change',updateTransTitle);
+$('#trans-to').addEventListener('change',updateTransTitle);
+
 $('#trans-btn').addEventListener('click',async()=>{
-  const t=$('#trans-input').value.trim(),d=$('#trans-dir').value;if(!t)return;
+  const t=$('#trans-input').value.trim(),from=$('#trans-from').value,to=$('#trans-to').value;
+  if(!t)return;
+  if(from===to){alert('Sélectionnez deux langues différentes.');return}
   const l=$('#trans-loader'),r=$('#trans-result');l.style.display='flex';r.style.display='none';
   try{
-    const q=d==='fr-en'?'fr|en':'en|fr';
+    const q=from+'|'+to;
     const resp=await fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(t)+'&langpair='+q);
     if(!resp.ok)throw Error();
     const data=await resp.json();
