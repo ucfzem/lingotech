@@ -618,40 +618,55 @@ function renderTopics(){
 }
 renderTopics();
 
-function findResponse(q,topicId){
-  const topicResponses=RESPONSES[topicId]||RESPONSES.general;
-  for(const [pattern,response] of topicResponses){
-    if(pattern.test(q))return response;
-  }
-  const general=RESPONSES.general;
-  for(const [pattern,response] of general){
-    if(pattern.test(q))return response;
-  }
-  return null;
+// === AI API config ===
+const GEMINI_KEY=''; // TODO: mets ta clé Gemini ici (https://aistudio.google.com/app/apikey)
+const GROQ_KEY='';   // TODO: mets ta clé Groq ici (https://console.groq.com/keys)
+
+async function askGemini(q,topicLabel){
+  if(!GEMINI_KEY)return null;
+  try{
+    const r=await fetch('https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key='+GEMINI_KEY,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:'Tu es un assistant IA qui répond en français. Thème: '+topicLabel+'. Question: '+q}],role:'user'}],safetySettings:[{category:'HARM_CATEGORY_HARASSMENT',threshold:'BLOCK_NONE'},{category:'HARM_CATEGORY_HATE_SPEECH',threshold:'BLOCK_NONE'},{category:'HARM_CATEGORY_SEXUALLY_EXPLICIT',threshold:'BLOCK_NONE'},{category:'HARM_CATEGORY_DANGEROUS_CONTENT',threshold:'BLOCK_NONE'}]})
+    });
+    if(!r.ok)return null;
+    const d=await r.json();
+    return d.candidates?.[0]?.content?.parts?.[0]?.text||null;
+  }catch{return null}
 }
 
-function generateAnswer(q,topicId){
-  const topic=TOPICS.find(t=>t.id===topicId)||TOPICS[0];
-  const matched=findResponse(q,topicId);
-  if(matched)return matched;
-  const fallbacks={
-    general:"Intéressant comme question ! Pour vous donner une réponse précise, pourriez-vous préciser un peu ? Je suis là pour discuter de tout : culture, sciences, vie quotidienne, tout vous est ouvert !",
-    sport:"Bonne question sport ! Le domaine est vaste — parlez-moi d'un sport, d'un athlète ou d'une compétition en particulier et je vous donnerai tous les détails.",
-    technology:"Question tech intéressante ! La technologie couvre tellement de domaines. Donnez-moi plus de détails : programmation, IA, gadgets, cybersécurité, jeux vidéo ?",
-    health:"La santé est un sujet important. Dites-m'en plus sur ce qui vous préoccupe : alimentation, sport, sommeil, stress, ou autre chose ?",
-    arts:"L'art est infini ! Parlez-moi d'un artiste, d'un mouvement, d'une œuvre ou d'un style qui vous intéresse.",
-    cinema:"Le cinéma est magique ! De quel film, réalistateur, genre ou acteur voulez-vous parler ?",
-    stars:"Les célébrités vous fascinent ? Dites-moi qui — acteur, musicien, influenceur — et je vous raconte tout !",
-    vacances:"Vous planifiez des vacances ? Dites-moi quel type de destination vous fait rêver : plage, montagne, ville, aventure ?",
-    hobbies:"Les hobbies, c'est la vie ! Lequel vous intéresse : lecture, cuisine, jardinage, jeux, ou autre ?",
-    travel:"Le voyage ouvre l'esprit ! Quelle région du monde voulez-vous découvrir ? Europe, Afrique, Asie, Amériques ?",
-    religion:"Les religions sont riches d'histoire et de spiritualité. Laquelle souhaitez-vous explorer ? Islam, christianisme, judaïsme, bouddhisme, spiritualité ?",
-    history:"L'histoire est un trésor de leçons. Quelle période ou civilisation vous attire : Égypte antique, Rome, guerres, Renaissance, révolutions ?"
+async function askGroq(q,topicLabel){
+  if(!GROQ_KEY)return null;
+  try{
+    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_KEY},
+      body:JSON.stringify({model:'mixtral-8x7b-32768',messages:[{role:'system',content:'Tu es un assistant IA qui répond en français.'},{role:'user',content:'Thème: '+topicLabel+'. Question: '+q}],max_tokens:500})
+    });
+    if(!r.ok)return null;
+    const d=await r.json();
+    return d.choices?.[0]?.message?.content||null;
+  }catch{return null}
+}
+
+function templateFallback(topicId){
+  const m={
+    general:"Intéressant ! Pour une réponse plus précise, pourriez-vous préciser ?",
+    sport:"Le sport est vaste — parlez-moi d'un sport, d'un athlète ou d'une compétition en particulier !",
+    technology:"Posez-moi une question précise : programmation, IA, gadgets, cybersécurité ?",
+    health:"Dites-m'en plus : alimentation, sport, sommeil, stress ?",
+    arts:"Parlez-moi d'un artiste, mouvement ou œuvre qui vous intéresse.",
+    cinema:"Quel film, réalistateur, genre ou acteur vous intéresse ?",
+    stars:"Qui — acteur, musicien, influenceur ?",
+    vacances:"Quel type de destination : plage, montagne, ville, aventure ?",
+    hobbies:"Lequel : lecture, cuisine, jardinage, jeux ?",
+    travel:"Quelle région : Europe, Afrique, Asie, Amériques ?",
+    religion:"Laquelle explorer : Islam, christianisme, judaïsme, bouddhisme, spiritualité ?",
+    history:"Quelle période : Égypte, Rome, guerres, Renaissance, révolutions ?"
   };
-  return fallbacks[topicId]||fallbacks.general;
+  return m[topicId]||m.general;
 }
 
-$('#assistant-btn').addEventListener('click',()=>{
+$('#assistant-btn').addEventListener('click',async()=>{
   const q=$('#assistant-input').value.trim();if(!q)return;
   const chat=$('#assistant-chat'),loader=$('#assistant-loader');
   const topic=TOPICS.find(t=>t.id===assistantTopic)||TOPICS[0];
@@ -661,15 +676,16 @@ $('#assistant-btn').addEventListener('click',()=>{
   chat.appendChild(userDiv);
   $('#assistant-input').value='';
   loader.style.display='flex';
-  setTimeout(()=>{
-    const answer=generateAnswer(q,assistantTopic);
-    const botDiv=document.createElement('div');
-    botDiv.className='chat-msg bot';
-    botDiv.innerHTML='<span class="topic-tag">'+topic.label+'</span>'+answer;
-    chat.appendChild(botDiv);
-    loader.style.display='none';
-    chat.scrollTop=chat.scrollHeight;
-  },300);
+  let answer=null;
+  answer=await askGemini(q,topic.label);
+  if(!answer)answer=await askGroq(q,topic.label);
+  if(!answer)answer=templateFallback(assistantTopic);
+  const botDiv=document.createElement('div');
+  botDiv.className='chat-msg bot';
+  botDiv.innerHTML='<span class="topic-tag">'+topic.label+'</span>'+answer;
+  chat.appendChild(botDiv);
+  loader.style.display='none';
+  chat.scrollTop=chat.scrollHeight;
 });
 $('#assistant-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('#assistant-btn').click()}});
 
