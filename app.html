@@ -640,7 +640,7 @@ async function askGroq(q,topicLabel){
   try{
     const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
       method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_KEY},
-      body:JSON.stringify({model:'mixtral-8x7b-32768',messages:[{role:'system',content:'Tu es un assistant IA qui répond en français.'},{role:'user',content:'Thème: '+topicLabel+'. Question: '+q}],max_tokens:500})
+      body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'system',content:'Tu es un assistant IA qui répond en français.'},{role:'user',content:'Thème: '+topicLabel+'. Question: '+q}],max_tokens:500})
     });
     if(!r.ok)return null;
     const d=await r.json();
@@ -677,8 +677,8 @@ $('#assistant-btn').addEventListener('click',async()=>{
   $('#assistant-input').value='';
   loader.style.display='flex';
   let answer=null;
-  answer=await askGemini(q,topic.label);
-  if(!answer)answer=await askGroq(q,topic.label);
+  answer=await askGroq(q,topic.label);
+  if(!answer)answer=await askGemini(q,topic.label);
   if(!answer)answer=templateFallback(assistantTopic);
   const botDiv=document.createElement('div');
   botDiv.className='chat-msg bot';
